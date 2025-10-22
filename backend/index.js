@@ -1,12 +1,19 @@
+// server
 import express from "express"
+import connectDB from "./src/config/db.js"
 
+// middleware
 import morgan from "morgan"
 import cors from "cors"
 import dotenv from "dotenv"
-import cookieParser from "cookie-parser"
 dotenv.config()
+import cookieParser from "cookie-parser"
+import { errorHandler, notFound } from "./src/middleware/error.middleware.js"
 
+// routes
+import auth from "./src/routes/auth.routes.js"
 
+connectDB();
 const app = express()
 const PORT = process.env.PORT || 4000
 
@@ -28,6 +35,10 @@ if(process.env.NODE_ENV === "development") {
 } else {
     app.use(morgan("tiny"))
 }
+
+
+// routes
+app.use("/api/auth", auth)
 
 
 app.get("/", (req, res) => {
@@ -54,6 +65,17 @@ app.get("/health", (req, res) => {
 app.get("/test", (req, res) => {
   return res.json({ status: 200, message: "API is live" });
 });
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    error: "Route not found",
+    message: `Cannot ${req.method} ${req.originalUrl}`,
+  });
+});
+
+app.use(notFound);
+app.use(errorHandler);
 
 
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))

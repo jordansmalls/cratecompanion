@@ -1,49 +1,44 @@
 // server
-import express from "express"
-import connectDB from "./src/config/db.js"
+import express from "express";
+import connectDB from "./src/config/db.js";
 
 // middleware
-import morgan from "morgan"
-import cors from "cors"
-import dotenv from "dotenv"
-dotenv.config()
-import cookieParser from "cookie-parser"
-import { errorHandler, notFound } from "./src/middleware/error.middleware.js"
+import morgan from "morgan";
+import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
+import cookieParser from "cookie-parser";
+import { errorHandler, notFound } from "./src/middleware/error.middleware.js";
 
 // routes
-import auth from "./src/routes/auth.routes.js"
-import user from "./src/routes/user.routes.js"
+import auth from "./src/routes/auth.routes.js";
+import user from "./src/routes/user.routes.js";
 
 connectDB();
-const app = express()
-const PORT = process.env.PORT || 4000
-
-
-
-
-
+const app = express();
+const PORT = process.env.PORT || 4000;
 
 // middleware
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true
-}))
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 // logging
-if(process.env.NODE_ENV === "development") {
-    app.use(morgan("dev"))
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
 } else {
-    app.use(morgan("tiny"))
+  app.use(morgan("tiny"));
 }
 
-
 // routes
-app.use("/api/auth", auth)
-app.use("/api/user", user)
+app.use("/api/auth", auth);
+app.use("/api/user", user);
 
 app.get("/", (req, res) => {
   res.json({
@@ -52,8 +47,6 @@ app.get("/", (req, res) => {
     environment: process.env.NODE_ENV || "development",
   });
 });
-
-
 
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -64,7 +57,6 @@ app.get("/health", (req, res) => {
     version: process.version,
   });
 });
-
 
 app.get("/test", (req, res) => {
   return res.json({ status: 200, message: "API is live" });
@@ -81,8 +73,4 @@ app.use((req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))
-
-
-
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

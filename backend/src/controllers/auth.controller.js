@@ -1,9 +1,8 @@
-import User from "../models/user.model.js"
-import generateToken from "../utils/generateToken.js"
-import validator from "validator"
+import User from "../models/user.model.js";
+import generateToken from "../utils/generateToken.js";
+import validator from "validator";
 
-
-const troubleErr = { message: "We're having trouble, please try again soon." }
+const troubleErr = { message: "We're having trouble, please try again soon." };
 
 /**
  * @desc    Register user
@@ -67,23 +66,25 @@ export const register = async (req, res) => {
  */
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if(!email || !password) {
-        return res.status(400).json({ message: "Invalid credentials." })
+  if (!email || !password) {
+    return res.status(400).json({ message: "Invalid credentials." });
+  }
+
+  try {
+    // check if email is tied to an existing account
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({
+          message: "Email is not associated with a Crate Companion account.",
+        });
     }
 
-    try {
-
-        // check if email is tied to an existing account
-        const user = await User.findOne({ email: email.toLowerCase() })
-
-        if(!user) {
-            return res.status(404).json({ message: "Email is not associated with a Crate Companion account." })
-        }
-
-
-         if (user && user.active && (await user.matchPassword(password))) {
+    if (user && user.active && (await user.matchPassword(password))) {
       generateToken(res, user._id);
       return res.status(200).json({
         _id: user._id,
@@ -93,12 +94,11 @@ export const login = async (req, res) => {
     } else {
       return res.status(401).json({ message: "Invalid credentials." });
     }
-
-    } catch (err) {
-       console.error("There was an error logging in a user:", err)
-       return res.status(500).json(troubleErr)
-    }
-}
+  } catch (err) {
+    console.error("There was an error logging in a user:", err);
+    return res.status(500).json(troubleErr);
+  }
+};
 
 /**
  * @desc    Logout user
@@ -107,12 +107,12 @@ export const login = async (req, res) => {
  */
 
 export const logout = (req, res) => {
-    res.cookie("jwt", "", {
-        httpOnly: true,
-        expires: new Date(0),
-    });
-    return res.status(200).json({ message: "Logged out successfully!" })
-}
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  return res.status(200).json({ message: "Logged out successfully!" });
+};
 
 /**
  * @desc    Get user profile
@@ -121,16 +121,16 @@ export const logout = (req, res) => {
  */
 
 export const getUserProfile = async (req, res) => {
-    const user = await User.findById(req.user._id)
+  const user = await User.findById(req.user._id);
 
-    if(!user) {
-        return res.status(404).json({ message: "User not found" })
-    } else {
-        return res.status(200).json({
-            _id: user._id,
-            email: user.email,
-            active: user.active,
-            createdAt: user.createdAt
-        })
-    }
-}
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  } else {
+    return res.status(200).json({
+      _id: user._id,
+      email: user.email,
+      active: user.active,
+      createdAt: user.createdAt,
+    });
+  }
+};

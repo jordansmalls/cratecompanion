@@ -1,8 +1,7 @@
-import User from "../models/user.model.js"
-import validator from "validator"
+import User from "../models/user.model.js";
+import validator from "validator";
 
-const troubleErr = { message: "We're having trouble, please try again." }
-
+const troubleErr = { message: "We're having trouble, please try again." };
 
 /**
  * @desc    Update email
@@ -30,7 +29,9 @@ export const updateEmail = async (req, res) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     if (normalizedEmail === user.email.toLowerCase()) {
-      return res.status(400).json({ message: "Please provide a different email address." });
+      return res
+        .status(400)
+        .json({ message: "Please provide a different email address." });
     }
 
     const emailExists = await User.findOne({
@@ -39,7 +40,9 @@ export const updateEmail = async (req, res) => {
     });
 
     if (emailExists) {
-      return res.status(400).json({ message: "Email is already associated with an account." });
+      return res
+        .status(400)
+        .json({ message: "Email is already associated with an account." });
     }
 
     user.email = normalizedEmail;
@@ -55,7 +58,9 @@ export const updateEmail = async (req, res) => {
     });
   } catch (err) {
     console.error("Email update error:", err);
-    return res.status(500).json({ message: "Error updating email, please try again soon." });
+    return res
+      .status(500)
+      .json({ message: "Error updating email, please try again soon." });
   }
 };
 
@@ -109,7 +114,6 @@ export const updatePassword = async (req, res) => {
   }
 };
 
-
 /**
  * @desc    Reset account (delete all tracklists)
  * @route   DELETE /api/user/tracklists
@@ -118,10 +122,11 @@ export const updatePassword = async (req, res) => {
 
 // TODO: implement when tracklist logic is brought into the app later
 export const resetAccount = async (req, res) => {
-    console.log("Reset account endpoint hit.")
-    return res.status(200).json({ message: "You have successfully reset your account!" })
-}
-
+  console.log("Reset account endpoint hit.");
+  return res
+    .status(200)
+    .json({ message: "You have successfully reset your account!" });
+};
 
 /**
  * @desc    Deactivate user account (toggle active prop -> users agree we keep tracklists for analytics)
@@ -130,28 +135,35 @@ export const resetAccount = async (req, res) => {
  */
 
 export const deactivateAccount = async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id)
+  try {
+    const user = await User.findById(req.user._id);
 
-        if(!user) {
-            return res.status(404).json({ message: "Account not found." })
-        }
-
-        // Soft delete of account
-        user.active = false;
-        await user.save()
-
-        // Clear JWT cookie
-        res.cookie("jwt", "", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            expires: new Date(0),
-        });
-
-        return res.status(200).json({ message: "Account deactivated successfully." })
-    } catch (err) {
-        console.error("There was an error deleting an account:", err)
-        return res.status(500).json({ message: "There was as an error deleting your account, please try again soon." })
+    if (!user) {
+      return res.status(404).json({ message: "Account not found." });
     }
-}
+
+    // Soft delete of account
+    user.active = false;
+    await user.save();
+
+    // Clear JWT cookie
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(0),
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Account deactivated successfully." });
+  } catch (err) {
+    console.error("There was an error deleting an account:", err);
+    return res
+      .status(500)
+      .json({
+        message:
+          "There was as an error deleting your account, please try again soon.",
+      });
+  }
+};

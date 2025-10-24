@@ -1,25 +1,3 @@
-// import { useAuthStore } from "../../store/authStore";
-// import LogoutButton from "../buttons/LogoutButton";
-
-// const Navbar = () => {
-
-//     const user = useAuthStore((state) => state.user)
-
-//     return (
-//         <div className="flex justify-around lg:mx-[2rem] lg:my-[4rem] items-center">
-//             <div>
-//                 <span className="font-bold">Crate Companion</span>
-//             </div>
-//             <div className="flex items-center gap-4">
-//                 <span>{user?.email}</span>
-//                 <LogoutButton className={"w-[8rem]"} />
-//             </div>
-//         </div>
-//      );
-// }
-
-// export default Navbar;
-
 import LogoutButton from "../buttons/LogoutButton";
 import { useAuthStore } from "../../store/authStore";
 import { Button } from "@/components/ui/button";
@@ -31,13 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, User, Settings, List, LogOut } from "lucide-react";
+import { Plus, User, Settings, List } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Navbar = () => {
   const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
 
   const navigate = useNavigate()
 
@@ -52,7 +29,7 @@ const Navbar = () => {
   return (
     <nav className="bg-primary text-white flex justify-between items-center px-6 py-4 lg:px-8">
       <div>
-        <h1 className="text-xl font-bold">Crate Companion</h1>
+        <Link to={"/dashboard"}><h1 className="text-xl font-bold tracking-tight">Crate Companion</h1></Link>
       </div>
 
       <div className="flex items-center gap-3">

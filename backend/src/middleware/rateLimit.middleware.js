@@ -38,3 +38,22 @@ export const registerLimiter = rateLimit({
     // Disable the `X-RateLimit-*` headeris
     legacyHeaders: false,
 });
+
+// --- Rate Limiter for Account Update Attempts --- //
+
+/**
+ * Implements rate limiting for account update attempts to mitigate abuse.
+ * 10 attempts per 5 minutes.
+ */
+
+export const accountUpdateLimiter = rateLimit({
+    // 5 mins
+    windowMs: 5 * 60 * 1000,
+    // each IP allowed 5 login requests per windowMS
+    max: 10,
+    message: "Too many account update attempts from this IP address, please try again after 5 minutes.",
+    // Return rate limit info in the `RateLimit-*` headers
+    standardHeaders: true,
+    // Disable the `X-RateLimit-*` headers
+    legacyHeaders: false,
+})

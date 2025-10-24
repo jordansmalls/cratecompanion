@@ -12,6 +12,7 @@ import { errorHandler, notFound } from "./src/middleware/error.middleware.js"
 
 // routes
 import auth from "./src/routes/auth.routes.js"
+import user from "./src/routes/user.routes.js"
 
 connectDB();
 const app = express()
@@ -42,7 +43,7 @@ if(process.env.NODE_ENV === "development") {
 
 // routes
 app.use("/api/auth", auth)
-
+app.use("/api/user", user)
 
 app.get("/", (req, res) => {
   res.json({
